@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav_graph.xml"
+    app:startDestination="@id/fragmentMain">
+
+    <fragment
+        android:id="@+id/fragmentMain"
+        android:name="com.example.storemanager.fragments.FragmentMenu"
+        android:label="FragmentMain" >
+        <action
+            android:id="@+id/action_fragmentMain_to_fragmentAddItem"
+            app:destination="@id/fragmentAddItem" />
+        <action
+            android:id="@+id/action_fragmentMain_to_fragmentDownloadBarcodes"
+            app:destination="@id/fragmentDownloadBarcodes" />
+        <action
+            android:id="@+id/action_fragmentMain_to_fragmentNewTransaction"
+            app:destination="@id/fragmentNewTransaction" />
+        <action
+            android:id="@+id/action_fragmentMain_to_fragmentSearchTransaction"
+            app:destination="@id/fragmentSearchTransaction" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentAddItem"
+        android:name="com.example.storemanager.fragments.FragmentAddItem"
+        android:label="FragmentAddItem" />
+    <fragment
+        android:id="@+id/fragmentDownloadBarcodes"
+        android:name="com.example.storemanager.fragments.FragmentDownloadBarcodes"
+        android:label="FragmentDownloadBarcodes" />
+    <fragment
+        android:id="@+id/fragmentNewTransaction"
+        android:name="com.example.storemanager.fragments.FragmentNewTransaction"
+        android:label="FragmentNewTransaction" />
+    <fragment
+        android:id="@+id/fragmentSearchTransaction"
+        android:name="com.example.storemanager.fragments.FragmentSearchTransaction"
+        android:label="FragmentSearchTransaction" >
+        <action
+            android:id="@+id/action_fragmentSearchTransaction_to_fragmentTransactionDetail"
+            app:destination="@id/fragmentTransactionDetail" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragmentTransactionDetail"
+        android:name="com.example.storemanager.fragments.FragmentTransactionDetail"
+        android:label="FragmentTransactionDetail" >
+        <argument
+            android:name="transactionId"
+            app:argType="string" />
+    </fragment>
+</navigation>
