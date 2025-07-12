@@ -5,17 +5,23 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
+import androidx.paging.filter
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storemanager.R
 import com.example.storemanager.adapters.SearchAdapter
+import com.example.storemanager.data.TransactionWithUser
 import com.example.storemanager.databinding.FragmentSearchTransactionBinding
 import com.example.storemanager.utils.VerticalItemDecoration
 import com.example.storemanager.vm.SearchTransactionVm
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -24,6 +30,8 @@ import kotlinx.coroutines.launch
 class FragmentSearchTransaction : Fragment() {
     private  var binding : FragmentSearchTransactionBinding? = null
     private lateinit var adapter: SearchAdapter
+    private var job : Job? =null
+    lateinit var allData : PagingData<TransactionWithUser>
     private val viewModel by viewModels<SearchTransactionVm>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +46,29 @@ class FragmentSearchTransaction : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         getData()
+        onTextChanged()
+    }
+
+    private fun onTextChanged() {
+        binding!!.etSearch.addTextChangedListener { editable ->
+            job?.cancel()
+            job = lifecycleScope.launch {
+                delay(600L)
+                val query = editable.toString().trim()
+
+                if (query.isNotEmpty()) {
+                    binding!!.progressBar.visibility = View.VISIBLE
+                    viewModel.getSpecificUserTransaction(query)
+                        .collectLatest {
+                            binding!!.progressBar.visibility = View.INVISIBLE
+                            adapter.submitData(it)
+                        }
+                } else {
+                    binding!!.progressBar.visibility = View.INVISIBLE
+                    adapter.submitData(allData)
+                }
+            }
+        }
     }
 
     private fun setupAdapter() {
@@ -59,6 +90,7 @@ class FragmentSearchTransaction : Fragment() {
     private fun getData() {
         lifecycleScope.launch {
             viewModel.getUserWithTransaction().collectLatest {
+                allData = it
                 adapter.submitData(it)
             }
         }

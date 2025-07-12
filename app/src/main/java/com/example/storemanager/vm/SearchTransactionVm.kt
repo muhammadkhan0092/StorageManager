@@ -2,7 +2,9 @@ package com.example.storemanager.vm
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.storemanager.data.Item
 import com.example.storemanager.data.TransactionDetails
 import com.example.storemanager.data.TransactionWithUser
@@ -17,5 +19,11 @@ class SearchTransactionVm @Inject constructor(
 ) : ViewModel(){
     fun getUserWithTransaction(): Flow<PagingData<TransactionWithUser>> {
         return userRepository.getUserWithTransacation()
+            .cachedIn(viewModelScope) // ✅ Cache here
+    }
+
+    fun getSpecificUserTransaction(mobileNo: String): Flow<PagingData<TransactionWithUser>> {
+        return userRepository.getSpecificUserWithTransaction(mobileNo)
+            .cachedIn(viewModelScope) // ✅ Cache this too
     }
 }

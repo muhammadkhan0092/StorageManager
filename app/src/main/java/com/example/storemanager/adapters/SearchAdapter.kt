@@ -36,6 +36,7 @@ class SearchAdapter(
         position: Int
     ) {
         val currentItem = getItem(position)
+        Log.d("khan","userno is ${currentItem?.user?.userNo}")
         holder.binding.tvPurchasedBy.text = "Purchased by : " + currentItem?.user?.userNo
         val sdf = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.getDefault())
         val date = sdf.format(Date(currentItem?.transaction?.data!!))

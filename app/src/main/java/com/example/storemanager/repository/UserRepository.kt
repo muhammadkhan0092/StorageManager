@@ -1,5 +1,6 @@
 package com.example.storemanager.repository
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -45,6 +46,16 @@ class UserRepository @Inject constructor(private val storeDatabase: StoreDatabas
         ).flow
     }
 
+    fun getSpecificUserWithTransaction(mobileNo : String) : Flow<PagingData<TransactionWithUser>>{
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {storeDatabase.getStoreDao().getTransactionWithSpecificUser(mobileNo)}
+        ).flow
+    }
+
     suspend fun placeOrder(
         user: User,
         transaction: Transaction,
@@ -53,11 +64,14 @@ class UserRepository @Inject constructor(private val storeDatabase: StoreDatabas
         return try {
             storeDatabase.withTransaction {
                 storeDatabase.getStoreDao().insertUser(user)
+                Log.d("khan","inserted user")
                 val generatedId = storeDatabase.getStoreDao().insertTransaction(transaction)
+                Log.d("khan","generated key is ${generatedId}")
                 val updatedItems = transactionItems.map {
                     it.copy(transactionId = generatedId)
                 }
                 storeDatabase.getStoreDao().insertTransactionItem(updatedItems)
+                Log.d("khan","inserted items as well")
             }
             OrderResult.Success
         } catch (e: Exception) {

@@ -1,6 +1,7 @@
 package com.example.storemanager.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -26,6 +27,7 @@ import com.example.storemanager.data.PurchasedItemDetail
 import com.example.storemanager.data.Transaction
 import com.example.storemanager.data.TransactionItem
 import com.example.storemanager.data.User
+import com.example.storemanager.databinding.DialogUserNoBinding
 import com.example.storemanager.databinding.FragmentNewTransactionBinding
 import com.example.storemanager.utils.BarcodeAnalyzer
 import com.example.storemanager.utils.OrderResult
@@ -57,32 +59,61 @@ class FragmentNewTransaction : Fragment() {
         onTransactionClicked()
     }
 
+    private fun showCustomDialog() {
+        // Inflate the custom layout using ViewBinding
+        val dialogBinding = DialogUserNoBinding.inflate(layoutInflater)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .setCancelable(true)
+            .create()
+
+        dialog.show()
+        dialogBinding.dialogButton.setOnClickListener {
+            val name = dialogBinding.userName.text.toString()
+            val no = dialogBinding.userNo.text.toString()
+            if(name.isEmpty() || no.isEmpty()){
+                Toast.makeText(requireContext(), "Enter All Fields", Toast.LENGTH_SHORT).show()
+            }
+            else
+            {
+                val user = User(no,name)
+                applyTransaction(user)
+                dialog.dismiss()
+            }
+        }
+    }
+
+    private fun applyTransaction(user: User){
+        Log.d("khan","button clicked")
+        val currentList = adapter.differ.currentList
+        var totalAmount = 0.0
+        currentList.forEach {
+            totalAmount+=it.item.itemPrice * it.quantity
+        }
+        val transaction = Transaction(transactionId = 0, userNo = user.userNo, totalAmount = totalAmount)
+        val transactionItems = currentList.map {
+            TransactionItem(0,it.item.itemId,it.quantity)
+        }
+
+        lifecycleScope.launch {
+            val result = viewModel.placeOrder(user,transaction,transactionItems)
+            if(result is OrderResult.Success){
+                Toast.makeText(requireContext(), "Transaction Successfull", Toast.LENGTH_SHORT).show()
+                Log.d("khan","Transaction Successfull")
+                findNavController().navigateUp()
+            }
+            else if(result is OrderResult.Failure)
+            {
+                Log.d("khan","Error ${result.message}")
+                Toast.makeText(requireContext(), "Error ${result.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun onTransactionClicked() {
         binding!!.button2.setOnClickListener {
-            Log.d("khan","button clicked")
-            val currentList = adapter.differ.currentList
-            var totalAmount = 0.0
-           currentList.forEach {
-               totalAmount+=it.item.itemPrice * it.quantity
-           }
-            val transaction = Transaction(transactionId = 0, userNo = "03176998863", totalAmount = totalAmount)
-            val transactionItems = currentList.map {
-                TransactionItem(0,it.item.itemId,it.quantity)
-            }
-            val user = User("03176998863","Muhammad Khan")
-            lifecycleScope.launch {
-                val result = viewModel.placeOrder(user,transaction,transactionItems)
-                if(result is OrderResult.Success){
-                    Toast.makeText(requireContext(), "Transaction Successfull", Toast.LENGTH_SHORT).show()
-                    Log.d("khan","Transaction Successfull")
-                    findNavController().navigateUp()
-                }
-                else if(result is OrderResult.Failure)
-                {
-                    Log.d("khan","Error ${result.message}")
-                    Toast.makeText(requireContext(), "Error ${result.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
+            showCustomDialog()
         }
     }
 

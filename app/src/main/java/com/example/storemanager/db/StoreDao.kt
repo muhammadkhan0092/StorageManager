@@ -43,6 +43,10 @@ interface StoreDao {
     @Query("SELECT * FROM `Transaction` ORDER BY data DESC")
     fun getTransactionWithUser() : PagingSource<Int, TransactionWithUser>
 
+    @androidx.room.Transaction
+    @Query("SELECT * FROM `Transaction` WHERE userNo LIKE '%' || :mobileNo || '%' ORDER BY data DESC ")
+    fun getTransactionWithSpecificUser(mobileNo : String) : PagingSource<Int, TransactionWithUser>
+
     @Query("SELECT * FROM `TRANSACTION` WHERE transactionId=:transactionId")
     suspend fun getTransactionItemsWithUser(transactionId: Long): TransactionDetails
 
