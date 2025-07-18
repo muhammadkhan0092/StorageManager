@@ -1,5 +1,6 @@
 package com.example.storemanager.fragments
 
+import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
@@ -18,6 +19,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.storemanager.R
 import com.example.storemanager.adapters.DownloadAdapter
+import com.example.storemanager.data.Item
+import com.example.storemanager.data.User
+import com.example.storemanager.databinding.DialogEditItemBinding
+import com.example.storemanager.databinding.DialogUserNoBinding
 import com.example.storemanager.databinding.FragmentDownloadBarcodesBinding
 import com.example.storemanager.databinding.FragmentMenuBinding
 import com.example.storemanager.utils.VerticalItemDecoration
@@ -55,15 +60,82 @@ class FragmentDownloadBarcodes : Fragment() {
     }
 
     private fun setupAdapter() {
-        adapter = DownloadAdapter { item ->
+        adapter = DownloadAdapter(
+            { item ->
             Log.d("khan","Clicked On Click")
             val barcodeBitmap = generateBarcodeBitmap(item.barcode, 800, 300)
             saveBitmapToGallery(requireContext(), barcodeBitmap, item.itemName)
-        }
+            },
+            {
+                showCustomDialog(it)
+            },
+            {
+                showDeleteDialog(it)
+            }
+        )
 
         binding!!.rvBarcode.adapter = adapter
         binding!!.rvBarcode.addItemDecoration(VerticalItemDecoration(30))
         binding!!.rvBarcode.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL,false)
+    }
+
+    private fun showDeleteDialog(item: Item){
+        AlertDialog.Builder(requireContext()) // Use `requireContext()` in a Fragment
+            .setTitle("Title here")
+            .setMessage("Are you sure you want to delete this item?")
+            .setPositiveButton("OK") { dialog, _ ->
+                lifecycleScope.launch {
+                    val result = viewModel.deleteItem(item)
+                    if(result==0){
+                        Toast.makeText(requireContext(), "Error Deleting Item", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                    {
+                        Toast.makeText(requireContext(), "Item Deleted Successfully", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+
+
+    }
+
+    private fun showCustomDialog(item: Item) {
+        val dialogBinding = DialogEditItemBinding.inflate(layoutInflater)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(dialogBinding.root)
+            .setCancelable(true)
+            .create()
+
+        dialog.show()
+        dialogBinding.dialogButton.setOnClickListener {
+            val quantity = dialogBinding.quantity.text.toString()
+            val price = dialogBinding.price.text.toString()
+            if(quantity.isEmpty() || price.isEmpty()){
+                Toast.makeText(requireContext(), "Enter All Fields", Toast.LENGTH_SHORT).show()
+            }
+            else
+            {
+                val newItem = item.copy(quantityPerItem = quantity, itemPrice = price.toDouble())
+                lifecycleScope.launch {
+                    val result = viewModel.editItem(newItem)
+                    if(result==0){
+                        Toast.makeText(requireContext(), "Update Failed", Toast.LENGTH_SHORT).show()
+                    }
+                    else
+                    {
+                        Toast.makeText(requireContext(), "Update Successfull", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                dialog.dismiss()
+            }
+        }
     }
 
     private fun observeData() {

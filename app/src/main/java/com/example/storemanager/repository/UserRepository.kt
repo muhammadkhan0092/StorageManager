@@ -26,6 +26,14 @@ class UserRepository @Inject constructor(private val storeDatabase: StoreDatabas
         return storeDatabase.getStoreDao().getItem(barcode)
     }
 
+    suspend fun updateItem(item: Item): Int {
+        return storeDatabase.getStoreDao().updateItem(item)
+    }
+
+    suspend fun deleteItem(item: Item) : Int{
+        return storeDatabase.getStoreDao().deleteItem(item)
+    }
+
     fun getDownloadingItems(): Flow<PagingData<Item>> {
         return Pager(
             config = PagingConfig(

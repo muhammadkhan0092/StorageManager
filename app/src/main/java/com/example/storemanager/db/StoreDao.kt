@@ -2,9 +2,11 @@ package com.example.storemanager.db
 
 import androidx.paging.PagingSource
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.storemanager.data.Item
 import com.example.storemanager.data.Transaction
 import com.example.storemanager.data.TransactionDetails
@@ -19,8 +21,15 @@ interface StoreDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertUser(user: User): Long
 
+    @Update
+    suspend fun updateItem(item: Item) : Int
+
+
     @Insert
     suspend fun insertItem(item: Item): Long
+
+    @Delete
+    suspend fun deleteItem(item: Item) : Int
 
     @Insert
     suspend fun insertTransaction(transaction: Transaction): Long

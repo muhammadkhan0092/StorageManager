@@ -1,12 +1,9 @@
 package com.example.storemanager.vm
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.example.storemanager.data.Item
-import com.example.storemanager.data.TransactionDetails
 import com.example.storemanager.data.TransactionWithUser
 import com.example.storemanager.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -15,4 +15,13 @@ class DownloadBarcodesVm @Inject constructor(
     fun getDownloadingItem(): Flow<PagingData<Item>> {
         return userRepository.getDownloadingItems()
     }
+
+    suspend fun editItem(item: Item): Int {
+        return userRepository.updateItem(item)
+    }
+
+    suspend fun deleteItem(item: Item) : Int{
+        return userRepository.deleteItem(item)
+    }
 }
+

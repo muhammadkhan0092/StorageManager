@@ -10,7 +10,9 @@ import com.example.storemanager.data.Item
 import com.example.storemanager.databinding.ItemDownloadBinding
 
 class DownloadAdapter(
-    private val onItemClick: (Item) -> Unit
+    private val onDownloadClicked: (Item) -> Unit,
+    private val onEditClicked: (Item) -> Unit,
+    private val onDeleteClicked: (Item) -> Unit
 ) : PagingDataAdapter<Item, DownloadAdapter.DownloadViewHolder>(DIFF_CALLBACK){
 
     inner class DownloadViewHolder(val binding: ItemDownloadBinding) : RecyclerView.ViewHolder(binding.root)
@@ -32,9 +34,15 @@ class DownloadAdapter(
     ) {
         val currentItem = getItem(position)
         Log.d("khan","current item is ${currentItem?.barcode}")
-        holder.binding.textView2.text = currentItem?.itemName
-        holder.binding.root.setOnClickListener {
-            onItemClick(currentItem!!)
+        holder.binding.textView2.text = currentItem?.itemName + " - " + currentItem?.quantityPerItem + "   Rs : " + currentItem?.itemPrice
+        holder.binding.ivDownload.setOnClickListener {
+            onDownloadClicked(currentItem!!)
+        }
+        holder.binding.ivEdit.setOnClickListener {
+            onEditClicked(currentItem!!)
+        }
+        holder.binding.ivDelete.setOnClickListener {
+            onDeleteClicked(currentItem!!)
         }
     }
 
