@@ -36,6 +36,13 @@ class FragmentMenu : Fragment() {
         onDownloadBarcode()
         onNewTransactionClicked()
         onSearchTransaction()
+        onItemsSaleListener()
+    }
+
+    private fun onItemsSaleListener() {
+        binding!!.btnCheckSalesPerItem.setOnClickListener {
+            findNavController().navigate(R.id.action_fragmentMain_to_fragmentItemSale)
+        }
     }
 
     private fun onSearchTransaction() {

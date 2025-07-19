@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_fragmentMain_to_fragmentSearchTransaction"
             app:destination="@id/fragmentSearchTransaction" />
+        <action
+            android:id="@+id/action_fragmentMain_to_fragmentItemSale"
+            app:destination="@id/fragmentItemSale" />
     </fragment>
     <fragment
         android:id="@+id/fragmentAddItem"
@@ -49,4 +52,8 @@
             android:name="transactionId"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentItemSale"
+        android:name="com.example.storemanager.fragments.FragmentItemSale"
+        android:label="FragmentItemSale" />
 </navigation>

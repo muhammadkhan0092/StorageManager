@@ -7,6 +7,7 @@ import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.room.withTransaction
 import com.example.storemanager.data.Item
+import com.example.storemanager.data.ItemSalesSummary
 import com.example.storemanager.data.Transaction
 import com.example.storemanager.data.TransactionDetails
 import com.example.storemanager.data.TransactionItem
@@ -91,5 +92,8 @@ class UserRepository @Inject constructor(private val storeDatabase: StoreDatabas
     }
     suspend fun getTransactions(): List<Transaction> {
         return storeDatabase.getStoreDao().getTransactions()
+    }
+    suspend fun getItemsSaleSummary() : List<ItemSalesSummary>{
+        return storeDatabase.getStoreDao().getItemSalesSummary()
     }
 }

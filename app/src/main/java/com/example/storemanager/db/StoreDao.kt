@@ -8,6 +8,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.storemanager.data.Item
+import com.example.storemanager.data.ItemSalesSummary
 import com.example.storemanager.data.Transaction
 import com.example.storemanager.data.TransactionDetails
 import com.example.storemanager.data.TransactionItem
@@ -58,6 +59,20 @@ interface StoreDao {
 
     @Query("SELECT * FROM `TRANSACTION` WHERE transactionId=:transactionId")
     suspend fun getTransactionItemsWithUser(transactionId: Long): TransactionDetails
+
+    @Query("""
+        SELECT 
+            t.itemId  AS id,
+            t.itemName AS name,
+            t.itemPrice AS price,
+            SUM(t.quantity) AS totalQuantity
+        FROM `TransactionItem` t
+        GROUP BY t.itemId
+        ORDER BY totalQuantity DESC
+    """)
+    suspend fun getItemSalesSummary(): List<ItemSalesSummary>
+
+
 
 
 }

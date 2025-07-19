@@ -93,7 +93,7 @@ class FragmentNewTransaction : Fragment() {
         }
         val transaction = Transaction(transactionId = 0, userNo = user.userNo, totalAmount = totalAmount)
         val transactionItems = currentList.map {
-            TransactionItem(0,it.item.itemId,it.quantity)
+            TransactionItem(0,0,it.quantity,it.item.itemId,it.item.itemPrice,it.item.itemName,it.item.quantityPerItem)
         }
 
         lifecycleScope.launch {
